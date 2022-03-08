@@ -1,0 +1,27 @@
+a proof-of-concept "demonstration" of a limited but possibly performant effect
+system.
+
+the key idea is that an effectful function is *almost* the same as a function
+taking some closures as parameters. if we limit our effects in certain ways and
+let the language design emphasize the function-like aspect of performing
+effects, we can make them pretty much just as fast.
+
+specifically, i've
+
+1. conceptually removed the ability to treat continuations as first-class
+   values. i'm not entirely sure whether this is strictly necessary as i don't
+   have all that much experience with compiling continuations, but it does help
+   emphasize the similarity to functions, since they don't have that ability.
+2. similarly, by making an effect handler pretty much identical to a function
+   implementation with returning being the equivalent of resuming and using the
+   `break` keyword to not resume (thus making resuming a bit more like the
+   "default" choice).
+3. syntactically made performing an effect equivalent to a function call. a type
+   is declared `type E` with some "effect constructors" `eff e(x Int) Int / E`,
+   which are the actual effects. then, an effect can be performed with just
+   `e(5)`, like any other function.
+4. turned effect handlers into concrete closure-like implementations that use
+   longjmp to "break out" and skip resuming.
+
+all in all, it currently seems like a viable way to implement an effect system
+which, limited as it is, still has a lot of potential.
