@@ -48,20 +48,19 @@ end
 
 #include <setjmp.h>
 #include <stdio.h>
-#include <string.h>
 
-typedef int (*e_t)(int, jmp_buf);
+typedef int (*e_t)(int, jmp_buf *);
 struct eff_t {
-  jmp_buf env;
+  jmp_buf *env;
   e_t eff;
 };
 
 int f(int x, struct eff_t E) { return E.eff(x, E.env) + x; }
 int g(int x, struct eff_t E) { return f(x, E) + x; }
 
-int e_handler(int x, jmp_buf env) {
+int e_handler(int x, jmp_buf *env) {
   if (x == 0) {
-    longjmp(env, 123);
+    longjmp(*env, 123);
   } else {
     return x + 1;
   }
@@ -75,14 +74,7 @@ int main() {
   if (break_point)
     s = break_point;
   else {
-    // this is a not pretty very dirty hack because i'm too lazy to properly
-    // figure out how actually initialize an array member. c really is funky.
-    // sometimes, t a = x; is fine, but if t is actually a typedef'd array, then
-    // that's not actually fine. i get why it is, since typedefs are pretty much
-    // just fancy macros and arrays need initializers, but damn it is very
-    // annoying.
-    struct eff_t E = {.eff = &e_handler};
-    memcpy(&E.env, &env, sizeof(env));
+    struct eff_t E = {&env, &e_handler};
     s = g(5, E);
   }
 

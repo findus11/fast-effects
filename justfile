@@ -3,16 +3,19 @@ alias c := clean
 alias r := run
 
 flags := "-Wall -Wpedantic -Wextra -Werror -fsanitize=undefined -g"
-out := "eff"
+
+# list available options
+default:
+    just --list
 
 # build the program
-build:
-    clang {{flags}} eff.c -o {{out}}.out
+build OUT:
+    cc {{flags}} {{OUT}}.c -o {{OUT}}.out
 
 # remove build artifacts
 clean:
     rm *.out
 
 # build and run the program
-run: build
-    ./{{out}}.out
+run OUT: (build OUT)
+    ./{{OUT}}.out

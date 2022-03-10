@@ -25,3 +25,9 @@ specifically, i've
 
 all in all, it currently seems like a viable way to implement an effect system
 which, limited as it is, still has a lot of potential.
+
+
+-- files in this repo ----------------------------------------------------------
+
+-  eff.c    a minimal example using `setjmp` and closures to implement effects
+-  yield.c  implementing some iterators using effects
